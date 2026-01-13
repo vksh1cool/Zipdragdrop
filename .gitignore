@@ -1,0 +1,6 @@
+node_modules/
+uploads/*.zip
+metadata.json
+test-files/
+*.log
+.DS_Store
