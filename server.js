@@ -32,21 +32,14 @@ function saveMetadata(data) {
   fs.writeFileSync(METADATA_FILE, JSON.stringify(data, null, 2));
 }
 
-function deleteExistingFile() {
-  const filePath = path.join(UPLOAD_DIR, 'current.zip');
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-  }
-}
 
-
-// Multer configuration
+// Multer configuration - use temp filename during upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, UPLOAD_DIR);
   },
   filename: (req, file, cb) => {
-    cb(null, 'current.zip');
+    cb(null, 'temp_upload.zip');
   }
 });
 
@@ -72,8 +65,6 @@ const upload = multer({
 
 // Upload endpoint
 app.post('/api/upload', (req, res) => {
-  deleteExistingFile();
-  
   upload.single('zipfile')(req, res, (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
@@ -89,6 +80,18 @@ app.post('/api/upload', (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: 'No file provided' });
     }
+    
+    // Upload complete - now safely replace the old file
+    const tempPath = path.join(UPLOAD_DIR, 'temp_upload.zip');
+    const finalPath = path.join(UPLOAD_DIR, 'current.zip');
+    
+    // Delete old file if exists
+    if (fs.existsSync(finalPath)) {
+      fs.unlinkSync(finalPath);
+    }
+    
+    // Rename temp to final
+    fs.renameSync(tempPath, finalPath);
     
     const metadata = {
       hasFile: true,
