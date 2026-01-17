@@ -83,10 +83,18 @@ function uploadFile(file) {
     hideProgress();
     if (xhr.status === 200) {
       showMessage('Upload successful!', 'success');
-      fetchStatus();
+      fetchStatus(); // Only refresh status on success
     } else {
-      const response = JSON.parse(xhr.responseText);
-      showMessage(response.error || 'Upload failed', 'error');
+      let errorMsg = 'Upload failed';
+      try {
+        const response = JSON.parse(xhr.responseText);
+        errorMsg = response.error || errorMsg;
+      } catch (e) {
+        errorMsg = `Upload failed (${xhr.status}): ${xhr.statusText}`;
+      }
+      console.error('Upload error:', xhr.status, xhr.responseText);
+      showMessage(errorMsg, 'error');
+      // Don't call fetchStatus() here - keep showing old file if upload fails
     }
   });
   
