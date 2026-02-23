@@ -1,6 +1,12 @@
 # Cloudflare Deployment Guide
 
-This project is configured for deployment to Cloudflare Workers with R2 storage.
+This project is configured for deployment to Cloudflare Pages with Workers, R2 storage, and KV.
+
+## Deployment Options
+
+You can deploy via:
+1. **Cloudflare Pages Dashboard** (recommended - easiest)
+2. **Wrangler CLI** (for advanced users)
 
 ## Prerequisites
 
@@ -8,7 +14,46 @@ This project is configured for deployment to Cloudflare Workers with R2 storage.
 - A Cloudflare account (free tier works)
 - Wrangler CLI (installed via npm)
 
-## Setup Steps
+## Option 1: Deploy via Cloudflare Pages Dashboard
+
+### 1. Push to GitHub
+
+Commit and push all changes to your GitHub repository.
+
+### 2. Create Cloudflare Pages Project
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. Navigate to **Workers & Pages** → **Create application** → **Pages**
+3. Connect your GitHub repository
+4. Configure build settings:
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+   - **Root directory**: `/` (leave empty)
+
+### 3. Add Environment Bindings
+
+After initial deployment, go to **Settings** → **Functions**:
+
+**R2 Bucket Binding:**
+- Variable name: `BUCKET`
+- R2 bucket: Create new bucket named `zip-drop-files`
+
+**KV Namespace Binding:**
+- Variable name: `METADATA`
+- KV namespace: Create new namespace named `zip-drop-metadata`
+
+**Environment Variables:**
+- `MAX_FILE_SIZE` = `1073741824`
+
+### 4. Redeploy
+
+Click **Retry deployment** to apply the bindings.
+
+Your app will be live at `https://your-project.pages.dev`
+
+---
+
+## Option 2: Deploy via Wrangler CLI
 
 ### 1. Install Dependencies
 

@@ -1,0 +1,34 @@
+const fs = require('fs');
+const path = require('path');
+
+console.log('📦 Building for Cloudflare Pages...\n');
+
+// Create dist directory
+const distDir = path.join(__dirname, '..', 'dist');
+if (!fs.existsSync(distDir)) {
+  fs.mkdirSync(distDir, { recursive: true });
+}
+
+// Copy public files to dist
+const publicDir = path.join(__dirname, '..', 'public');
+const files = ['index.html', 'styles.css', 'app.js'];
+
+files.forEach(file => {
+  const src = path.join(publicDir, file);
+  const dest = path.join(distDir, file);
+  if (fs.existsSync(src)) {
+    fs.copyFileSync(src, dest);
+    console.log(`✓ Copied ${file}`);
+  }
+});
+
+// Copy worker to functions directory
+const functionsDir = path.join(distDir, '_worker.js');
+const workerSrc = path.join(__dirname, '..', 'src', 'index.js');
+
+if (fs.existsSync(workerSrc)) {
+  fs.copyFileSync(workerSrc, functionsDir);
+  console.log('✓ Copied worker function');
+}
+
+console.log('\n✅ Build complete! Output in dist/');

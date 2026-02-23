@@ -6,3 +6,4 @@ test-files/
 .DS_Store
 .dev.vars
 .wrangler/
+dist/

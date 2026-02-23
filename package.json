@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest",
+    "build": "node scripts/build.js",
     "deploy": "wrangler deploy",
     "dev:worker": "wrangler dev",
     "setup": "node scripts/setup-cloudflare.js"
