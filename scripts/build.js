@@ -22,6 +22,14 @@ files.forEach(file => {
   }
 });
 
+// Copy _routes.json to dist
+const routesSrc = path.join(__dirname, '..', '_routes.json');
+const routesDest = path.join(distDir, '_routes.json');
+if (fs.existsSync(routesSrc)) {
+  fs.copyFileSync(routesSrc, routesDest);
+  console.log('✓ Copied _routes.json');
+}
+
 // Copy worker to functions directory
 const functionsDir = path.join(distDir, '_worker.js');
 const workerSrc = path.join(__dirname, '..', 'src', 'index.js');
