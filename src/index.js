@@ -143,35 +143,8 @@ async function handleStatus(request, env, corsHeaders) {
 }
 
 async function handleStatic(request, env, path, corsHeaders) {
-  // Map paths to static files
-  const staticFiles = {
-    '/': 'index.html',
-    '/index.html': 'index.html',
-    '/styles.css': 'styles.css',
-    '/app.js': 'app.js',
-  };
-
-  const file = staticFiles[path];
-  if (!file) {
-    return new Response('Not Found', { status: 404 });
-  }
-
-  const object = await env.BUCKET.get(`static/${file}`);
-  if (!object) {
-    return new Response('Not Found', { status: 404 });
-  }
-
-  const contentTypes = {
-    'html': 'text/html',
-    'css': 'text/css',
-    'js': 'application/javascript',
-  };
-
-  const ext = file.split('.').pop();
-  return new Response(object.body, {
-    headers: {
-      ...corsHeaders,
-      'Content-Type': contentTypes[ext] || 'text/plain',
-    },
-  });
+  // For Cloudflare Pages, static assets are served automatically
+  // This function should only handle API routes
+  // Let Pages serve the static files by returning null
+  return env.ASSETS.fetch(request);
 }
