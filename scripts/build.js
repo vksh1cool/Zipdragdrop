@@ -30,13 +30,4 @@ if (fs.existsSync(routesSrc)) {
   console.log('✓ Copied _routes.json');
 }
 
-// Copy worker to functions directory
-const functionsDir = path.join(distDir, '_worker.js');
-const workerSrc = path.join(__dirname, '..', 'src', 'index.js');
-
-if (fs.existsSync(workerSrc)) {
-  fs.copyFileSync(workerSrc, functionsDir);
-  console.log('✓ Copied worker function');
-}
-
 console.log('\n✅ Build complete! Output in dist/');
