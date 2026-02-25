@@ -1,15 +1,20 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 
 app = "zipdragdrop"
-primary_region = "sin"
+primary_region = "ams"
 
 [build]
+
+[deploy]
+  strategy = "immediate"
 
 [env]
   PORT = "3000"
   NODE_ENV = "production"
   UPLOAD_DIR = "/app/uploads"
 
+# Single machine setup — this app stores files on a single volume,
+# so we must NOT run multiple machines (each would have its own volume).
 [http_service]
   internal_port = 3000
   force_https = true
@@ -32,3 +37,4 @@ primary_region = "sin"
 [mounts]
   source = "uploads_data"
   destination = "/app/uploads"
+  initial_size = "1gb"

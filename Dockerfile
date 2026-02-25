@@ -9,6 +9,9 @@ RUN npm ci --omit=dev
 # --- Production stage ---
 FROM node:20-alpine
 
+# su-exec is needed to drop privileges in entrypoint
+RUN apk add --no-cache su-exec
+
 # Create non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
@@ -21,14 +24,16 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY package.json ./
 COPY server.js ./
 COPY public/ ./public/
-COPY scripts/ ./scripts/
 
-# Create uploads directory (will be mounted as a Fly volume)
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Create uploads directory (will be overwritten by Fly volume mount)
 RUN mkdir -p /app/uploads && chown -R appuser:appgroup /app/uploads
-
-# Switch to non-root user
-USER appuser
 
 EXPOSE 3000
 
+# Entrypoint fixes volume permissions then drops to appuser
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["npm", "start"]
